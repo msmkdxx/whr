@@ -67,7 +67,7 @@ public class EmployeeController {
         pageUtils.setPageNo(pageNo);
         pageUtils.setCurrentPage(pageNo);
         pageUtils.setPageSize(pageSize);
-        Map employeeListMap = employeeService.selectEmployeeList(pageNo, pageSize, politicalId, nationId, departmentId, positionId, jobTitle, employmentForm, from, to);
+        Map employeeListMap = employeeService.selectEmployeeList(pageUtils.getPageNo(), pageSize, politicalId, nationId, departmentId, positionId, jobTitle, employmentForm, from, to);
         pageUtils.setCurrentList((List<Employee>) employeeListMap.get("currentList"));
         pageUtils.setTotalCount((Long) employeeListMap.get("totalCount"));
         return pageUtils;
