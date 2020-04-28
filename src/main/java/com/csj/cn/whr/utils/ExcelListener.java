@@ -18,17 +18,15 @@ public class ExcelListener extends AnalysisEventListener {
      * 可以通过实例获取该值
      */
     private List<Object> datas = new ArrayList<Object>();
+    private static final int BATCH_COUNT = 5;
+    private static int count = 1;
 
     @Override
     public void invoke(Object object, AnalysisContext analysisContext) {
-
-        System.out.println("当前行：" + analysisContext.getCurrentRowNum());
-        System.out.println(object);
         //数据存储到list，供批量处理，或后续自己业务逻辑处理。
         datas.add(object);
         //根据自己业务做处理
         doSomething(object);
-
     }
 
     /**
@@ -36,8 +34,7 @@ public class ExcelListener extends AnalysisEventListener {
      */
     @Override
     public void doAfterAllAnalysed(AnalysisContext analysisContext) {
-        //解析结束销毁不用的资源
-        // datas.clear();
+        // datas.clear();//解析结束销毁不用的资源
     }
 
     public List<Object> getDatas() {
@@ -50,6 +47,10 @@ public class ExcelListener extends AnalysisEventListener {
 
     private void doSomething(Object object) {
         //入库调用接口
+        count++;
+        if (datas.size() >= BATCH_COUNT) {
+            datas.clear();
+        }
     }
 }
 
