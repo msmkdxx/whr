@@ -2,6 +2,7 @@ package com.csj.cn.whr.service;
 
 import com.csj.cn.whr.dto.Employee;
 import com.csj.cn.whr.vo.EmployeeVo;
+import com.csj.cn.whr.vo.SearchVo;
 
 import java.util.Date;
 import java.util.List;
@@ -30,18 +31,10 @@ public interface EmployeeService {
      *
      * @param pageNo
      * @param pageSize
-     * @param politicalId
-     * @param nationId
-     * @param departmentId
-     * @param positionId
-     * @param jobTitle
-     * @param employmentForm
-     * @param from
-     * @param to
+     * @param searchVo
      * @return
      */
-    Map selectEmployeeList(int pageNo, int pageSize, Integer politicalId, Integer nationId, Integer departmentId,
-                           Integer positionId, Integer jobTitle, Integer employmentForm, Date from, Date to);
+    Map selectEmployeeList(int pageNo, int pageSize, SearchVo searchVo);
 
     /**
      * 通过id查询员工信息
@@ -70,11 +63,11 @@ public interface EmployeeService {
     boolean updateEmployee(EmployeeVo employeeVo);
 
     /**
-     * 通过id删除员工
+     * 删除员工
      *
-     * @param id
+     * @param ids
      * @return
      */
-    boolean delEmployeeById(Long id);
+    boolean delEmployees(Long... ids);
 
 }

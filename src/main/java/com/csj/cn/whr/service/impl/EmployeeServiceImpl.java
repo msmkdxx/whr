@@ -5,6 +5,7 @@ import com.csj.cn.whr.dto.EmployeeExample;
 import com.csj.cn.whr.mapper.EmployeeMapper;
 import com.csj.cn.whr.service.EmployeeService;
 import com.csj.cn.whr.vo.EmployeeVo;
+import com.csj.cn.whr.vo.SearchVo;
 import com.google.common.collect.Maps;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public List<Employee> selectEmployees() {
         EmployeeExample employeeExample = new EmployeeExample();
-        List<Employee> employeeList = employeeMapper.selectByExample(employeeExample);
+        List<Employee> employeeList = employeeMapper.selectByExample(null);
         return employeeList;
     }
 
@@ -51,27 +52,35 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Map selectEmployeeList(int pageNo, int pageSize, Integer politicalId, Integer nationId, Integer departmentId, Integer positionId, Integer jobTitle, Integer employmentForm, Date from, Date to) {
-        EmployeeExample employeeExample = new EmployeeExample();
+    public Map selectEmployeeList(int pageNo, int pageSize, SearchVo searchVo) {
+        /*EmployeeExample employeeExample = new EmployeeExample();
         employeeExample.setLimit(pageNo);
         employeeExample.setOffset(pageSize);
-        if (politicalId != 0) {
-            employeeExample.createCriteria().andPoliticalIdEqualTo(politicalId);
-        } else if (nationId != 0) {
-            employeeExample.createCriteria().andNationIdEqualTo(nationId);
-        } else if (departmentId != 0) {
-            employeeExample.createCriteria().andDepartmentIdEqualTo(departmentId);
-        } else if (positionId != 0) {
-            employeeExample.createCriteria().andPositionIdEqualTo(positionId);
-        } else if (jobTitle != 0) {
-            employeeExample.createCriteria().andJobTitleEqualTo(jobTitle);
-        } else if (employmentForm != 0) {
-            employeeExample.createCriteria().andEmploymentFormEqualTo(employmentForm);
-        } else if (null != from && null != to) {
-            employeeExample.createCriteria().andEntryDateBetween(from, to);
+        EmployeeExample.Criteria criteria = employeeExample.createCriteria();
+        if (searchVo.getPoliticalId() != 0) {
+            criteria.andPoliticalIdEqualTo(searchVo.getPoliticalId());
         }
-        List<Employee> employeeList = employeeMapper.selectByExample(employeeExample);
-        long counts = employeeMapper.countByExample(employeeExample);
+        if (nationId != 0) {
+            employeeExample.createCriteria().andNationIdEqualTo(nationId);
+        }
+         if (departmentId != 0) {
+            employeeExample.createCriteria().andDepartmentIdEqualTo(departmentId);
+        }
+        if (positionId != 0) {
+            employeeExample.createCriteria().andPositionIdEqualTo(positionId);
+        }
+        if (jobTitle != 0) {
+            employeeExample.createCriteria().andJobTitleEqualTo(jobTitle);
+        }
+         if (employmentForm != 0) {
+            employeeExample.createCriteria().andEmploymentFormEqualTo(employmentForm);
+        }
+        if (null != from && null != to) {
+            employeeExample.createCriteria().andEntryDateBetween(from, to);
+        }*/
+        List<Employee> employeeList = employeeMapper.selectBySearch(pageNo, pageSize, searchVo);
+        long counts = employeeMapper.selectCountBySearch(searchVo);
+//        long counts = employeeMapper.countByExample(employeeExample);
         Map<String, Object> employeeListMap = Maps.newHashMap();
         employeeListMap.put("currentList", employeeList);
         employeeListMap.put("totalCount", counts);
@@ -103,8 +112,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public boolean delEmployeeById(Long id) {
-        return employeeMapper.deleteByPrimaryKey(id) > 0;
+    public boolean delEmployees(Long... ids) {
+        return employeeMapper.deleteEmployee(ids) > 0;
     }
 
 }

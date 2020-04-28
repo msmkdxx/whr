@@ -7,12 +7,14 @@ import com.csj.cn.whr.utils.PageUtils;
 import com.csj.cn.whr.utils.ReturnResult;
 import com.csj.cn.whr.utils.ReturnResultUtils;
 import com.csj.cn.whr.vo.EmployeeVo;
+import com.csj.cn.whr.vo.SearchVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,19 +57,12 @@ public class EmployeeController {
     @GetMapping(value = "/selectEmployeeListBy")
     public PageUtils<List<Employee>> selectEmployeeListBy(@RequestParam(name = "pageNo", required = false, defaultValue = "1") int pageNo,
                                                           @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize,
-                                                          @RequestParam(name = "politicalId", required = false, defaultValue = "0") Integer politicalId,
-                                                          @RequestParam(name = "nationId", required = false, defaultValue = "0") Integer nationId,
-                                                          @RequestParam(name = "departmentId", required = false, defaultValue = "0") Integer departmentId,
-                                                          @RequestParam(name = "positionId", required = false, defaultValue = "0") Integer positionId,
-                                                          @RequestParam(name = "jobTitle", required = false, defaultValue = "0") Integer jobTitle,
-                                                          @RequestParam(name = "employmentForm", required = false, defaultValue = "0") Integer employmentForm,
-                                                          @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam(name = "from", required = false) Date from,
-                                                          @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam(name = "to", required = false) Date to) {
+                                                          @Validated SearchVo searchVo) {
         PageUtils pageUtils = new PageUtils();
         pageUtils.setPageNo(pageNo);
         pageUtils.setCurrentPage(pageNo);
         pageUtils.setPageSize(pageSize);
-        Map employeeListMap = employeeService.selectEmployeeList(pageUtils.getPageNo(), pageSize, politicalId, nationId, departmentId, positionId, jobTitle, employmentForm, from, to);
+        Map employeeListMap = employeeService.selectEmployeeList(pageUtils.getPageNo(), pageSize, searchVo);
         pageUtils.setCurrentList((List<Employee>) employeeListMap.get("currentList"));
         pageUtils.setTotalCount((Long) employeeListMap.get("totalCount"));
         return pageUtils;
@@ -95,42 +90,29 @@ public class EmployeeController {
         return ReturnResultUtils.returnFail(112, "修改失败了!!!");
     }
 
-    @ApiOperation(value = "通过id删除员工")
-    @GetMapping(value = "/delEmployeeById")
-    public ReturnResult delEmployeeById(@RequestParam Long id) {
-        if (employeeService.delEmployeeById(id)) return ReturnResultUtils.returnSucess();
+    @ApiOperation(value = "删除员工")
+    @GetMapping(value = "/delEmployees")
+    public ReturnResult delEmployees(@RequestParam Long... ids) {
+        if (employeeService.delEmployees(ids)) return ReturnResultUtils.returnSucess();
 
         return ReturnResultUtils.returnFail(113, "删除失败了!!!");
     }
 
-    @ApiOperation(value = "批量删除员工")
-    @GetMapping(value = "/delEmployees")
-    public ReturnResult delEmployees(@RequestParam Long... ids) {
-        try {
-            for (long id : ids) {
-                employeeService.delEmployeeById(id);
-            }
-            return ReturnResultUtils.returnSucess();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ReturnResultUtils.returnFail(114, "删除失败了!!!");
-        }
-    }
-
-    /**
-     * 导入Excel
-     */
+    @ApiOperation(value = "导入Excel")
     @GetMapping(value = "/readExcel")
-    public void readExcel() {
+    public ReturnResult readExcel(String fileName) {
         InputStream fileInputStream = null;
         try {
             //读取user.xlsx表格，获得文件输入流
-            fileInputStream = new FileInputStream("E:/create.xlsx");
+            fileInputStream = new FileInputStream(fileName);
             //获得实体类对象集合
             List<Employee> employees = (List<Employee>) ExcelUtils.readExcel(fileInputStream, EmployeeVo.class, 1);
+            if (ObjectUtils.isEmpty(employees)) {
+                return ReturnResultUtils.returnFail(121, "文件内容为空");
+            }
             //批量插入到数据库user表中
             employeeService.insertEmployees(employees);
-
+            return ReturnResultUtils.returnSucess();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } finally {
@@ -143,21 +125,24 @@ public class EmployeeController {
                 }
             }
         }
+        return ReturnResultUtils.returnFail(122, "导入失败！！！");
     }
 
-    /**
-     * 导出Excel
-     */
+    @ApiOperation(value = "导出Excel")
     @GetMapping(value = "/writeExcel")
-    public void writeExcel() {
+    public ReturnResult writeExcel(String fileName) {
         FileOutputStream fileOutputStream = null;
         try {
             //获取文件输出流
-            fileOutputStream = new FileOutputStream("E:/create.xlsx");
+            fileOutputStream = new FileOutputStream(fileName);
             //获得实体类对象集合
             List<Employee> employees = employeeService.selectEmployees();
+            if (ObjectUtils.isEmpty(employees)) {
+                return ReturnResultUtils.returnFail(124, "导出失败！！！");
+            }
             //把数据写入到指定的Excel表格中
             ExcelUtils.writeExcel(fileOutputStream, EmployeeVo.class, employees);
+            return ReturnResultUtils.returnSucess();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } finally {
@@ -169,5 +154,6 @@ public class EmployeeController {
                 }
             }
         }
+        return ReturnResultUtils.returnFail(124, "导出失败！！！");
     }
 }
