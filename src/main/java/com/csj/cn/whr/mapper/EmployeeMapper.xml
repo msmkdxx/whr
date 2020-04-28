@@ -132,6 +132,9 @@
         from employee
         <where>
             <trim suffix="" suffixOverrides="and">
+                <if test="searchVo.name != null and searchVo.name !=''">
+                    name like concat('%',#{searchVo.name},'%') and
+                </if>
                 <if test="searchVo.nationId != null and searchVo.nationId != 0">
                     nation_id = #{searchVo.nationId} and
                 </if>
@@ -208,13 +211,7 @@
         delete from employee
         where id = #{id,jdbcType=BIGINT}
     </delete>
-    <delete id="deleteEmployee">
-        delete from employee
-        where id IN
-        <foreach collection="ids" item="id" open="(" close=")" separator=",">
-            #{id}
-        </foreach>
-    </delete>
+
    <delete id="deleteByExample" parameterType="com.csj.cn.whr.dto.EmployeeExample">
         <!--
           WARNING - @mbg.generated

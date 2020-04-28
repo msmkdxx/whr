@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -53,31 +54,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Map selectEmployeeList(int pageNo, int pageSize, SearchVo searchVo) {
-        /*EmployeeExample employeeExample = new EmployeeExample();
-        employeeExample.setLimit(pageNo);
-        employeeExample.setOffset(pageSize);
-        EmployeeExample.Criteria criteria = employeeExample.createCriteria();
-        if (searchVo.getPoliticalId() != 0) {
-            criteria.andPoliticalIdEqualTo(searchVo.getPoliticalId());
-        }
-        if (nationId != 0) {
-            employeeExample.createCriteria().andNationIdEqualTo(nationId);
-        }
-         if (departmentId != 0) {
-            employeeExample.createCriteria().andDepartmentIdEqualTo(departmentId);
-        }
-        if (positionId != 0) {
-            employeeExample.createCriteria().andPositionIdEqualTo(positionId);
-        }
-        if (jobTitle != 0) {
-            employeeExample.createCriteria().andJobTitleEqualTo(jobTitle);
-        }
-         if (employmentForm != 0) {
-            employeeExample.createCriteria().andEmploymentFormEqualTo(employmentForm);
-        }
-        if (null != from && null != to) {
-            employeeExample.createCriteria().andEntryDateBetween(from, to);
-        }*/
         List<Employee> employeeList = employeeMapper.selectBySearch(pageNo, pageSize, searchVo);
         long counts = employeeMapper.selectCountBySearch(searchVo);
 //        long counts = employeeMapper.countByExample(employeeExample);
@@ -113,7 +89,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public boolean delEmployees(Long... ids) {
-        return employeeMapper.deleteEmployee(ids) > 0;
+        EmployeeExample employeeExample = new EmployeeExample();
+        employeeExample.createCriteria().andIdIn(Arrays.asList(ids));
+        return employeeMapper.deleteByExample(employeeExample) > 0;
     }
 
 }

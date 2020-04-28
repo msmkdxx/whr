@@ -15,6 +15,8 @@ import java.util.Date;
  */
 @Data
 public class SearchVo implements Serializable {
+    @ApiModelProperty(value = "员工姓名")
+    private String name;
     @ApiModelProperty(value = "民族")
     private Integer nationId;
     @ApiModelProperty(value = "政治面貌")
