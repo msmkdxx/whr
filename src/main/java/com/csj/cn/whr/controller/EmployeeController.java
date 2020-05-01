@@ -75,15 +75,15 @@ public class EmployeeController {
     }
 
     @ApiOperation(value = "添加员工信息")
-    @GetMapping(value = "/insertEmployee")
-    public ReturnResult insertEmployee(@Validated EmployeeVo employeeVo) {
+    @PostMapping(value = "/insertEmployee")
+    public ReturnResult insertEmployee(@RequestBody EmployeeVo employeeVo) {
         if (employeeService.insertEmployee(employeeVo)) return ReturnResultUtils.returnSucess();
 
         return ReturnResultUtils.returnFail(111, "添加失败了!!!");
     }
 
     @ApiOperation(value = "修改员工信息")
-    @GetMapping(value = "/updateEmployee")
+    @PostMapping(value = "/updateEmployee")
     public ReturnResult updateEmployee(@Validated EmployeeVo employeeVo) {
         if (employeeService.updateEmployee(employeeVo)) return ReturnResultUtils.returnSucess();
 
