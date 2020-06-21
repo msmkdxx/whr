@@ -43,7 +43,7 @@
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <table schema="" tableName="employee">
+        <table schema="" tableName="activity">
             <!--默认不使用驼峰 写false才使用-->
             <property name="useActualColumnNames" value="false"/>
                 <columnOverride column="id" jdbcType="BIGINT" javaType="java.lang.Long"></columnOverride>

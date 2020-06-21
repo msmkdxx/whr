@@ -3,10 +3,7 @@ package com.csj.cn.whr.controller;
 import com.csj.cn.whr.dto.Employee;
 import com.csj.cn.whr.exception.ExcelException;
 import com.csj.cn.whr.service.EmployeeService;
-import com.csj.cn.whr.utils.ExcelUtils;
-import com.csj.cn.whr.utils.PageUtils;
-import com.csj.cn.whr.utils.ReturnResult;
-import com.csj.cn.whr.utils.ReturnResultUtils;
+import com.csj.cn.whr.utils.*;
 import com.csj.cn.whr.vo.EmployeeVo;
 import com.csj.cn.whr.vo.SearchVo;
 import io.swagger.annotations.Api;
@@ -37,6 +34,8 @@ import java.util.Map;
 public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
+    @Autowired
+    private MailUtils mailUtils;
 
     @ApiOperation(value = "模糊查询员工列表")
     @GetMapping(value = "/selectEmployeeListByLike")
@@ -147,5 +146,21 @@ public class EmployeeController {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 发送邮件
+     *
+     * @return
+     */
+    @GetMapping(value = "/sendExcel")
+    public boolean sendExcel() {
+        try {
+            mailUtils.sendAttachmentsMail("17366031923@163.com", "作业", "发送Excel附件", "E:/create_user.xlsx", "user.xlsx");
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
